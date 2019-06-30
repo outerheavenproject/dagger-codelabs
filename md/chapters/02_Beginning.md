@@ -2,6 +2,7 @@
 
 > あなたは動物の写真を表示するアプリ「Petbook」を開発する会社に転職しました。
 > この会社は新しい技術に積極的に取り組む風土があるのですが、Daggerだけは「よく分からない」という理由で導入が遅れていました。
+> また、テストの導入もあまり進んでいませんでした。
 > あなたは、そんなプロダクトにDaggerを導入するタスクにアサインされました。
 > はたして、あなたは無事にDaggerを導入できるでしょうか・・・
 
@@ -10,7 +11,7 @@
 以下のコマンドを実行するか、それに準ずる操作を行い、GitHubリポジトリをcloneします
 
 ```
-$ git clone https://github.com/outer-heaven2/dagger-codelabs-sample.git
+$ git clone git@github.com:outer-heaven2/dagger-codelabs-sample.git
 ```
 
 cloneが完了したらAndroid Studioを実行し、cloneしたプロジェクトを開きます。
@@ -21,13 +22,19 @@ TODO: stsnさん書いて
 
 ### このプロジェクトの問題点 と、Daggerで解決できること
 
-TODO: stsnさん書いて
+このプロジェクトでは、次の問題があります。
 
-・・・というわけで、このプロジェクトにはDaggerが入っていません。
+1. DogServiceのインスタンスを毎回生成してしまう。
+
+シングルトンに管理したいインスタンスを、自分で生成・管理するのはめんどうです。Daggerを使うことで、安全にシングルトンでインスタンスを管理することが出来ます。
+
+1. DogService RetrofitインターフェースをPresenter内で生成しているので、環境の切り替えが困難
+
+これは、DIパターンを採用することで解決出来ます。Daggerを使うことで、DIパターンをお手軽に導入することが可能になります。
 
 ### Daggerのインストール
 
-まずDaggerの導入する最初の第一歩として、プロジェクトにDaggerを導入します。
+まず、Daggerを導入する最初の第一歩として、GradleにDaggerを設定します。
 
 ```app/build.gradle
 def dagger_version = '2.23.2'
@@ -39,13 +46,58 @@ kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
 ### AppComponentをつくる
 
-TODO:
+まず、`Component`アノテーションを使い、AppComponentを定義します。
 
-- AppComponent つくる
-- Application で AppComponent を呼び出す
-- SubComponent つくる
+```kotlin
+@Component
+@Singleton
+interface AppComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(): AppComponent
+    }
+}
+```
 
-### インスタンス化の実装を書き換える
+上記のファイルを定義すると、アノテーションプロセッサーにより、`DaggerAppComponent`クラスが生成されます。
+
+次に、Applicationクラスで、生成された`DaggerAppComponent`を使います。
+
+```kotlin
+class App : Application() {
+    lateinit var appComponent: AppComponent
+
+    override fun onCreate() {
+        super.onCreate()
+        appComponent = DaggerAppComponent.create()
+    }
+}
+```
+
+これで下準備は完了です。
+
+### DogServiceインスタンスをDaggerで生成する
+
+DogServiceをDaggerから提供するには次のように行います。
+
+```kotlin
+@Module
+class DataModule {
+    @Singleton
+    @Provides
+    fun provideRetrofit(): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://dog.ceo/api/")
+            .addConverterFactory(
+                Json.asConverterFactory("application/json".toMediaType())
+            )
+            .build()
+
+    @Singleton
+    @Provides
+    fun provideDogService(retrofit: Retrofit): DogService = retrofit.create()
+}
+```
 
 ### 動かしてみる
 
