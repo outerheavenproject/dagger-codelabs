@@ -8,5 +8,13 @@ jobs:
       - checkout
 
       - run:
+          name: Install jq
+          command: apt-get update && apt-get install -y jq
+
+      - run:
+          name: Download claat
+          command: ./.circleci/download_claat.sh
+
+      - run:
           name: Publish codelab
           command: ./codelab_gen.sh
