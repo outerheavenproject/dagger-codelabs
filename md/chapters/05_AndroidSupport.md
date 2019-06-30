@@ -1,2 +1,2 @@
-# dagger.android を使用したAndroidに特化した記述
+## dagger.android を使用したAndroidに特化した記述
 
