@@ -174,33 +174,11 @@ override fun onAttach(context: Context) {
 
 例えば`DaggerApplication`を使うと
 
-```diff
- package net.pside.android.example.petbook
-
--import android.app.Application
- import dagger.android.AndroidInjector
--import dagger.android.DispatchingAndroidInjector
--import dagger.android.HasAndroidInjector
--import javax.inject.Inject
-+import dagger.android.DaggerApplication
-
--class App : Application(), HasAndroidInjector {
--    @Inject
--    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
--
--    override fun onCreate() {
--        super.onCreate()
--        DaggerAppComponent
--            .factory()
--            .create()
--            .inject(this)
--    }
--
--    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
-+class App : DaggerApplication() {
-+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
-+        DaggerAppComponent.factory().create()
- }
+```kt
+class App : DaggerApplication() {
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
+        DaggerAppComponent.factory().create()
+}
 ```
 
 このように、多くのボイラープレートコードを削ることが出来ます。
