@@ -1,0 +1,22 @@
+@startuml 06_Scope
+
+class DogActionBottomSheetDialogFragment
+class DogActionBottomSheetPresenter
+class MainActivity
+class MainPresenter
+
+interface DogActionSink {
+    +write()
+}
+interface "DogActionBottomSheetContract$Presenter"
+interface "MainContract$Presenter"
+
+DogActionSink <|.. MainPresenter
+"MainContract$Presenter" <|.. MainPresenter
+"DogActionBottomSheetContract$Presenter" <|.. DogActionBottomSheetPresenter
+
+"MainContract$Presenter" <.. MainActivity
+"DogActionBottomSheetContract$Presenter" <.. DogActionBottomSheetDialogFragment
+DogActionSink <.. "DogActionBottomSheetContract$Presenter"
+
+@enduml
