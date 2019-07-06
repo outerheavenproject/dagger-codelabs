@@ -1,14 +1,34 @@
-## Appendix 2: Scope
+## 付録2: Scope
 
 Scopeを定義し使用することでライフサイクルに沿ったインスタンスを受け取ることが出来ます。
 実際にScopeを使用しながら感覚を掴んでいきましょう。
 
 今回はPetBookに、複数の写真を選択してシェアする機能を作りましょう。
-長押しした場合にBottom sheetが出てそこのメニューからまとめてシェアできる導線を作ることにします。
+おおまかな仕様としては以下のようになります。
+- Bottom sheetからシェアする対象に追加できる
+- Fabをタップすると、今まで追加した対象をまとめてシェアできる
 
-### `FragmentScope`
+`intro-dagger-scope`を見てみてください。今回主に使用するのは
+- `MainActivity`
+- `DogActionBottomSheetDialogFragment`
 
-今回はFragmentのためのScopeとして`FragmentScope`を定義しましょう。
+の2つです。
+UIの作りについては本題とずれるため触れません。
+依存関係は以下のようになっています。
+
+![image](./06_Scope.png)
+
+### `Scope`
+
+今回はActivityのためのScopeとして`ActivityScope`、FragmentのためのScopeとして`FragmentScope`を定義しましょう。
+カスタムスコープは以下のように定義します。
+
+```kt
+@Scope
+@MustBeDocumented
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ActivityScope
+```
 
 ```kt
 @Scope
@@ -17,21 +37,54 @@ Scopeを定義し使用することでライフサイクルに沿ったインス
 annotation class FragmentScope
 ```
 
-`MainFragment`のSubComponentにScopeを付加します。
+`MainActivity`のSubComponentに`ActivityScope`を付加します。
 
 ```kt
+@ActivityScope
+@ContributesAndroidInjector
+fun contributeMainActivity(): MainActivity
 ```
 
-### シェアリストの更新
-
-Bottom sheetから何かしら返すことで実現しても良いのですが、今回はScopeを体感してもらうために親FragmentのPresenterを参照し、シェアするリストを更新していきます。
+続いて`DogActionBottomSheetDialogFragment`には`FragmentScope`を付加します。
 
 ```kt
+@FragmentScope
+@ContributesAndroidInjector
+fun contributeDogActionBottomSheetDialogFragment(): DogActionBottomSheetDialogFragment
 ```
 
-### 実行と確認
+### `MainPresenter` / `DogActionSink`
 
-実際に動かしてみてください、選択する度に表示が更新されていくのがわかりはずです。
-ここでもし`FragmentScope`を外した場合、Bottom sheet側には新しいインスタンスが渡されるため、更新はされません。
+さて、先程のクラス図を見ると`DogActionSink`というinterfaceがあることに気づくでしょう。
+今回はこのinterfaceの`write`を呼び出すことで、シェアリストへの追加を実現します。
+この`DogActionSink`の実体は`MainPresenter`です。
+
+ここで考えるべきこととして、今の状態では`MainPresenter`のインスタンスを毎回生成するため、`DogActionSink`をいくら呼び出したとしても、`MainActivity`から見えるシェアリストは空であるということです。
+`MainActivity`から参照される`MainContract$Presenter`、`DogActionBottomSheetPresenter`から参照される`DogActionSink`、これらはすべて同じインスタンスである必要があります。 (混乱するかもしれませんが、`MainContract$Presenter`と`DogActionSink`の実体は同じ`MainPresenter`です。)
+
+この課題を解決できるのが`Scope`です。
+まずは`MainPresenter`に`ActivityScope`を**付加せずに**試してみてください。
+
+```kt
+class MainPresenter @Inject constructor(
+    private val view: MainContract.View
+) : MainContract.Presenter, DogActionSink {
+```
+
+`MainPresenter#write`あたりにbreakpointを置いて確認してみると、Bottom sheetから参照される`MainPresenter`が毎回生成されていることが分かるでしょう。
+
+それでは`MainPresenter`に`ActivityScope`を付加してみましょう。
+
+```kt
+@ActivityScope
+class MainPresenter @Inject constructor(
+    private val view: MainContract.View
+) : MainContract.Presenter, DogActionSink {
+```
+
+今度はインスタンスが保持され、期待した挙動になっていることが確認できます。
 
 ### まとめ
+
+このチャプターでは`Scope`の使い方について実際に挙動を見ながら確認していきました。
+最近ではMVVMを採用する場合には`androidx.lifecycle.ViewModelProvider`もあるため`Scope`が必要な機会はかなり少なくなってきているかとは思いますが、Fluxなどを採用する場合には有効な知識です。
