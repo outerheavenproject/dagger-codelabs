@@ -1,4 +1,4 @@
-## トラブルシューティング4: 再帰
+## トラブルシューティング5: 再帰
 
 次は`troubleshooting-recursion` branchをcheckoutしbuildして下さい。
 

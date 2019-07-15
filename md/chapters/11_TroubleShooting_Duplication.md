@@ -1,4 +1,4 @@
-## トラブルシューティング3: 定義の重複
+## トラブルシューティング4: 定義の重複
 
 `troubleshooting-duplicate` branchをcheckoutしてbuildして下さい。
 以下のようなエラーが発生します。
