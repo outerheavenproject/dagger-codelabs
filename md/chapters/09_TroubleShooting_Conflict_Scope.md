@@ -1,6 +1,6 @@
 ## トラブルシューティング2: ScopeのConflict
 
-次のケースは`Scope`をつけ間違えている場合です。
+次のケースは`Scope`がConflictしている場合です。
 `troubleshooting-conflict-scope` branchをcheckoutしてください。
 
 ```
