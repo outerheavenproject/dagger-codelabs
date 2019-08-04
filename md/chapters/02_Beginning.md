@@ -256,13 +256,13 @@ DogFragmentにおいて、DogPresenterをDaggerから注入してもらうよう
 Android Studioの`Make Project` または `Command + F9` を実行します。
 無事に実行出来たらDaggerの導入はひとまず無事に完了しました！
 
-## 宿題
+### 宿題
 
 - `ShibaPresenter`も`DogService`をDaggerで注入するよう書き換えてみましょう。
 - どちらのPresenterもDagger化が済んだなら、`DogService.kt`の`getDogService()`を削除しても動作するはずです。やってみよう。
 - Dagger化する前とした後で `DogService` のインスタンスがどう変化しているか確認してみよう。（例えば `dogService.hashCode()` はインスタンスが同じかどうかを調べるには良い方法です）
 
-## diff
+### diff
 
 masterとここまでの記事内容の想定回答のdiffです。
 
