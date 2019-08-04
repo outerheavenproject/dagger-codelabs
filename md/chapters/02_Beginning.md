@@ -25,7 +25,7 @@ cloneが完了したらAndroid Studioを実行し、cloneしたプロジェク�
 JSONシリアライザーとしてkotlinx.serializationを採用しています。
 アーキテクチャとしてMVPパターンを採用しています。
 
-- ./app/src/main/java/net/pside/android/example/petbook
+- ./app/src/main/java/com/github/outerheavenproject/wanstagram
   - data
     - Dog.kt: DogモデルおよびDogsモデル
     - DogService.kt: Retrofitのinterface定義およびRetrofitのBuilder
@@ -44,7 +44,7 @@ JSONシリアライザーとしてkotlinx.serializationを採用しています�
       - ShibaPresenter.kt: ShibaFragmentをViewと捉えた場合のPresenter実装です
       - ShibaContract.kt: ShibaFragmentとShibaPresenterで実装すべきinterfaceが定義されています
 
-なお、`./app/src/main/java/net/pside/android/example/petbook/`のパスはは今後`<appRoot>/`と表現します。
+なお、`./app/src/main/java/com/github/outerheavenproject/wanstagram/`のパスは今後`<appRoot>/`と表現します。
 
 ### このプロジェクトの問題点 と、Daggerで解決できること
 
@@ -260,9 +260,10 @@ Android Studioの`Make Project` または `Command + F9` を実行します。
 
 - `ShibaPresenter`も`DogService`をDaggerで注入するよう書き換えてみましょう。
 - どちらのPresenterもDagger化が済んだなら、`DogService.kt`の`getDogService()`を削除しても動作するはずです。やってみよう。
+- Dagger化する前とした後で `DogService` のインスタンスがどう変化しているか確認してみよう。（例えば `dogService.hashCode()` はインスタンスが同じかどうかを調べるには良い方法です）
 
 ## diff
 
 masterとここまでの記事内容の想定回答のdiffです。
 
-[Comparing master\.\.\.intro\-dagger · outer\-heaven2/dagger\-codelabs\-sample](https://github.com/outer-heaven2/dagger-codelabs-sample/compare/master...intro-dagger?diff=unified)
+[Comparing master\.\.\.intro\-dagger · outer\-heaven2/dagger\-codelabs\-sample](https://github.com/outerheavenproject/dagger-codelabs-sample/compare/master...intro-dagger)
