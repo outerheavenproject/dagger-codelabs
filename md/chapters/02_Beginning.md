@@ -3,18 +3,19 @@
 > あなたは動物SNSアプリ「Wanstagram」を開発する会社に転職しました。
 > この会社は新しい技術に積極的に取り組む風土があるのですが、Daggerだけは「よく分からない」という理由で導入が遅れていました。
 > また、テストの導入もあまり進んでいませんでした。
-> あなたは、そんなプロダクトにDaggerを導入するタスクにアサインされました。
+> あなたは、そんなプロダクトにDaggerを導入するよう指示されました。
 > はたして、あなたは無事にDaggerを導入できるでしょうか・・・
 
 ### プロジェクトのclone
 
-以下のコマンドを実行するか、それに準ずる操作を行い、GitHubリポジトリをcloneします
+まずはCodelabで実際に作業するリポジトリ——「Wanstagram」アプリ——を取得します。
+以下のコマンドを実行して、GitHubリポジトリをcloneします。
 
 ```
 $ git clone git@github.com:outer-heaven2/dagger-codelabs-sample.git
 ```
 
-cloneが完了したらAndroid Studioを実行し、cloneしたプロジェクトを開きます。
+cloneが完了したらAndroid Studioを実行し、cloneしたプロジェクトを指定して開きます。
 
 ### プロジェクト構成
 
