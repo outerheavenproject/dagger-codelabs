@@ -112,3 +112,4 @@ class DogPresenterTest {
 
 - テストが一発でPassするのは少し気持ち悪いです（本当にテストが回ってなくても似たような挙動になります）。 `isEqualTo(1)` を `isNotEqualTo(1)` とか `isEqualTo(0)` に変えてテストを実行してみて、テストが落ちることを確認しましょう。
 - 例によって `ShibaPresenter` のテストはまだ書かれていません。書いてみましょう。
+
