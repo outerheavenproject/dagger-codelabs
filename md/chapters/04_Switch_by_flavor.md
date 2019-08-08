@@ -105,6 +105,30 @@ Android StudioのLogcatを見てみて、通信のログが表示されたら成
 ### 宿題
 
 - `release` バリアントでログが出ないことを確認しましょう。
+    - releaseビルドのための鍵設定が少々面倒です。大雑把に `./app/build.gradle` を以下のように設定するとよさそうです。
+
+```gradle
+android {
+    // ...
+    buildTypes {
+        release {
+            // ...
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storeFile file("${System.getProperty("user.home")}/.android/debug.keystore")
+        }
+    }
+}
+// ...
+```
+
 - 本番環境と検証環境を分けるにはどうすればいいでしょうか？
     - まずは `production` フレーバーと `staging` フレーバーを用意するところからですね。
     - いくつかの答えがあるでしょう：
