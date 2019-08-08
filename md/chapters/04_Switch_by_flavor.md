@@ -7,7 +7,7 @@
 Daggerを導入しつつ、本番環境と検証環境を差し替える方法を考えます。
 
 Androidアプリ開発において、本番環境と検証環境を差し替える方法として一般的なのは、
-ビルドバリアント(ビルドタイプ(`debug`,`release`)やプロダクトフレーバー(例として`staging`, `production`))ごとにフォルダを切り替える機能があります。
+Build variant(Build type (`debug`,`release`)やProduct flavor(例として`staging`, `production`))ごとにフォルダを切り替える機能があります。
 Daggerにおいてもこれらの機能を活用するのですが、**差し替えたいクラスをvariantごとに提供して直接差し替える**のではなく、**SubComponentをvariantごとに提供することで間接的に差し替えを行う**ことが求められます。
 
 というわけで、デバッグ環境ではRetrofitのログ出力を行うが、本番環境ではログ出力をさせない実装を行いたいと思います。
@@ -78,8 +78,8 @@ class OkHttpClientModule {
 > `./app/src/` には通常 `test`, `androidTest` のテスト用コードの配置フォルダおよび、
 > `main` というフォルダでメインアプリ用コードの配置フォルダが存在します。
 > `debug`, `release` というフォルダは初期状態では存在しないので作成します。
-> `debug`, `release` のバリアントは初期状態で存在しているためフォルダを作成するだけで利用できますが、
-> それ以外の名称を付ける場合（例えば `staging` など）は、対応するビルドバリアントまたはフレーバーを
+> `debug`, `release` のvariantは初期状態で存在しているためフォルダを作成するだけで利用できますが、
+> それ以外の名称を付ける場合（例えば `staging` など）は、対応するBuild variantまたはフレーバーを
 > `./app/build.gradle` に実装する必要があります。
 > 詳しくはこちらを確認してください： [ビルド バリアントの設定  \|  Android Developers](https://developer.android.com/studio/build/build-variants?hl=ja)
 
