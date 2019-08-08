@@ -15,7 +15,7 @@
 UIの作りについては本題とずれるため触れません。
 依存関係は以下のようになっています。
 
-![image](./07_Custom_Scope.png)
+![image](./08_Custom_Scope.png)
 
 ### `Scope`
 
