@@ -1,5 +1,10 @@
 ## 序盤3: Dagger導入環境に置ける、本番環境と検証環境で使用するクラスの切り替え
 
+<!--
+start: intro-dagger-testing
+goal:  intro-dagger-build-types
+-->
+
 > あなたはDagger環境でテストを書くことが出来ました！
 > 次はDaggerを使ってデバッグログ出力を切り替えたり、本番/検証環境を切り替えるといった、
 > 通常アプリを作っていてありがちなケースをDaggerで解決します。

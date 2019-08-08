@@ -1,5 +1,10 @@
 ## 付録2: Scope
 
+<!--
+start: intro-dagger-android-support
+goal:  intro-dagger-scope
+-->
+
 `Scope`を定義し使用することでライフサイクルに沿ったインスタンスを受け取ることが出来ます。
 実際に`Scope`を使用しながら感覚を掴んでいきましょう。
 

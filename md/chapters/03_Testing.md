@@ -1,5 +1,10 @@
 ## 序盤2: Daggerで依存性を解決しているクラスのテスト
 
+<!--
+start: intro-dagger
+goal:  intro-dagger-testing
+-->
+
 > あなたは無事にDaggerを導入することが出来ました！
 > 次に取り組むはDagger化されたクラスに対してテストを書くことです。
 

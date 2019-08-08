@@ -1,5 +1,10 @@
 ## 序盤x: Subcomponentの導入
 
+<!--
+start: intro-dagger-build-types
+goal:  intro-dagger-subcomponent
+-->
+
 これまでの章で、Daggerの基本的な使い方を見てきました。Daggerをより便利に使うために、この章ではSubcomponentと呼ばれている機能について説明しています。
 
 ### Subcomponent

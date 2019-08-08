@@ -1,5 +1,10 @@
 ## 付録3: Custom Scope
 
+<!--
+start: intro-dagger-scope
+goal:  intro-dagger-custom-scope
+-->
+
 ここでは先程の`Scope`に続いて、実際に自分で定義した`Scope`を使いながら、より実践的な使い方を紹介します。
 
 今回はWanstagramに、複数の写真を選択してシェアする機能を作りましょう。

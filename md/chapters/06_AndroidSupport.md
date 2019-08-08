@@ -1,5 +1,10 @@
 ## 付録1: Dagger.Android を使用したAndroidに特化した記述
 
+<!--
+start: intro-dagger-subcomponent
+goal:  intro-dagger-android-support
+-->
+
 Dagger.Androidを使用することで、AndroidにおけるDaggerの利便性を高めることが出来ます。
 実際に使っていきながら見ていきましょう。
 
