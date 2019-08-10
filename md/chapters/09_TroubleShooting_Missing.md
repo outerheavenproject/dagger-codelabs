@@ -7,13 +7,13 @@
 以下のエラーが出るはずです。
 
 ```
-エラー: [Dagger/MissingBinding] net.pside.android.example.petbook.ui.dog.DogContract.Presenter cannot be provided without an @Provides-annotated method.
-public abstract interface AppComponent extends dagger.android.AndroidInjector<net.pside.android.example.petbook.App> {
+エラー: [Dagger/MissingBinding] com.github.outerheavenproject.wanstagram.ui.dog.DogContract.Presenter cannot be provided without an @Provides-annotated method.
+public abstract interface AppComponent extends dagger.android.AndroidInjector<com.github.outerheavenproject.wanstagram.App> {
                 ^
-      net.pside.android.example.petbook.ui.dog.DogContract.Presenter is injected at
-          net.pside.android.example.petbook.ui.dog.DogFragment.presenter
-      net.pside.android.example.petbook.ui.dog.DogFragment is injected at
-          dagger.android.AndroidInjector.inject(T) [net.pside.android.example.petbook.AppComponent → net.pside.android.example.petbook.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent → net.pside.android.example.petbook.ui.dog.DogFragmentModule_ContributeDogFragment.DogFragmentSubcomponent]
+      com.github.outerheavenproject.wanstagram.ui.dog.DogContract.Presenter is injected at
+          com.github.outerheavenproject.wanstagram.ui.dog.DogFragment.presenter
+      com.github.outerheavenproject.wanstagram.ui.dog.DogFragment is injected at
+          dagger.android.AndroidInjector.inject(T) [com.github.outerheavenproject.wanstagram.AppComponent → com.github.outerheavenproject.wanstagram.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent → com.github.outerheavenproject.wanstagram.ui.dog.DogFragmentModule_ContributeDogFragment.DogFragmentSubcomponent]
 ```
 
 これは`DogFragment`が`DogContract.Presenter`を必要としているが、`DogContract.Presenter`がどこからも供給されておらず、依存が解決できないことを示しています。

@@ -4,10 +4,10 @@
 `troubleshooting-different-scope` branchをcheckoutしてください。
 
 ```
-エラー: [Dagger/IncompatiblyScopedBindings] net.pside.android.example.petbook.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent scoped with @net.pside.android.example.petbook.di.ActivityScope may not reference bindings with different scopes:
-public abstract interface AppComponent extends dagger.android.AndroidInjector<net.pside.android.example.petbook.App> {
+エラー: [Dagger/IncompatiblyScopedBindings] com.github.outerheavenproject.wanstagram.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent scoped with @com.github.outerheavenproject.wanstagram.di.ActivityScope may not reference bindings with different scopes:
+public abstract interface AppComponent extends dagger.android.AndroidInjector<com.github.outerheavenproject.wanstagram.App> {
                 ^
-      @net.pside.android.example.petbook.di.FragmentScope class net.pside.android.example.petbook.ui.MainPresenter [net.pside.android.example.petbook.AppComponent → net.pside.android.example.petbook.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent]
+      @com.github.outerheavenproject.wanstagram.di.FragmentScope class com.github.outerheavenproject.wanstagram.ui.MainPresenter [com.github.outerheavenproject.wanstagram.AppComponent → com.github.outerheavenproject.wanstagram.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent]
 ```
 
 これは`Scope`のライフサイクルを間違えて`Inject`している場合に起きます。例えば、`Fragment`のライフサイクルに応じた`Scope`を付加しているクラスを`Activity`に対して`Inject`しようとしている場合などです。`Fragment`の`Subcomponent`を`Activity`の`Subcomponent`の子として定義している場合には、この関係は成立しないため、エラーとなります。
@@ -20,5 +20,7 @@ public abstract interface AppComponent extends dagger.android.AndroidInjector<ne
 
 ```kt
 @ActivityScope
-class MainPresenter @Inject constructor() : MainContract.Presenter
+class MainPresenter @Inject constructor(
+    private val view: MainContract.View
+) : MainContract.Presenter, DogActionSink {
 ```

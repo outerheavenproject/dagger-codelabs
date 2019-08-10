@@ -4,15 +4,18 @@
 `troubleshooting-conflict-scope` branchをcheckoutしてください。
 
 ```
-エラー: [net.pside.android.example.petbook.ui.dog.DogFragmentModule_ContributeDogFragment.DogFragmentSubcomponent] net.pside.android.example.petbook.ui.dog.DogFragmentModule_ContributeDogFragment.DogFragmentSubcomponent has conflicting scopes:
-public abstract interface AppComponent extends dagger.android.AndroidInjector<net.pside.android.example.petbook.App> {
+エラー: [com.github.outerheavenproject.wanstagram.ui.dog.DogFragmentModule_ContributeDogFragment.DogFragmentSubcomponent] com.github.outerheavenproject.wanstagram.ui.dog.DogFragmentModule_ContributeDogFragment.DogFragmentSubcomponent has conflicting scopes:
+public abstract interface AppComponent extends dagger.android.AndroidInjector<com.github.outerheavenproject.wanstagram.App> {
                 ^
-    net.pside.android.example.petbook.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent also has @net.pside.android.example.petbook.di.MyScope
+    com.github.outerheavenproject.wanstagram.ui.MainActivityModule_ContributeMainActivity.MainActivitySubcomponent also has @com.github.outerheavenproject.wanstagram.di.MyScope
 ```
 
 これは親子関係にある`Subcomponent`に対して同じ`Scope`を付加しているために発生します。
 エラーメッセージにある通り、`MainActivitySubcomponent`に付加した`Scope`が`DogFragmentSubcomponent`にも付加されています。
-これはどちらかが正しい`Scope`を付加されば解決です。
+
+// TODO: MainActivityModuleとMainActivitySubComponentの関係を説明したい
+
+これはどちらかが正しい`Scope`を使うよう修正すれば解決です。
 
 ```kt
 @Module
