@@ -1,4 +1,4 @@
-## 序盤2: Daggerで依存性を解決しているクラスのテスト
+## Daggerで依存性を解決しているクラスのテスト
 
 <!--
 start: intro-dagger

@@ -1,4 +1,4 @@
-## 序盤1: Dagger未導入のアプリにDaggerを導入する
+## Dagger未導入のアプリにDaggerを導入する
 
 <!--
 start: master

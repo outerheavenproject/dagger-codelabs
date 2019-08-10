@@ -1,4 +1,4 @@
-## 序盤x: Subcomponentの導入
+## Subcomponentの導入
 
 <!--
 start: intro-dagger-build-types

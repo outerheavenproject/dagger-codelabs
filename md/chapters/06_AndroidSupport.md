@@ -1,4 +1,4 @@
-## 付録1: Dagger.Android を使用したAndroidに特化した記述
+## Dagger.Androidを使用したAndroidに特化した記述
 
 <!--
 start: intro-dagger-subcomponent

@@ -1,4 +1,4 @@
-## 付録2: Scope
+## Scope
 
 <!--
 start: intro-dagger-android-support
