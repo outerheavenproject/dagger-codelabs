@@ -63,7 +63,7 @@ JSONシリアライザーとしてkotlinx.serializationを採用しています�
 ### Daggerのインストール
 
 まず、Daggerを導入する最初の第一歩として、GradleにDaggerを設定します。
-`dependencies`ブロック内に以下のように記述します。
+`./app/build.gradle` の `dependencies`ブロック内に以下のように記述します。
 また、`kapt`を使用するため、`kotlin-kapt`プラグインを有効にすることを忘れないようにします。
 
 ```./app/build.gradle
@@ -74,9 +74,9 @@ apply plugin: 'kotlinx-serialization'
 
 dependencies {
     // ...
-    def dagger_version = '2.23.2'
-    implementation "com.google.dagger:dagger:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    def dagger_version = '2.23.2' // 👈
+    implementation "com.google.dagger:dagger:$dagger_version" // 👈
+    kapt "com.google.dagger:dagger-compiler:$dagger_version" // 👈
 }
 ```
 
@@ -85,7 +85,7 @@ dependencies {
 ### AppComponentをつくる
 
 まず、`Component`アノテーションを使い、AppComponentを定義します。
-`<appRoot>/AppComponent.kt` を作成します。
+`<srcBasePath>/AppComponent.kt` を作成します。
 
 ```kotlin
 @Singleton
@@ -100,7 +100,7 @@ interface AppComponent {
 
 上記のファイルを定義した後、`Make Project` を実行すると、アノテーションプロセッサーの自動生成により、`DaggerAppComponent`クラスが生成されます。
 
-次に、`<appRoot>/App.kt` を作成してApplicationクラスを作成し、さきほど生成された`DaggerAppComponent`を使います。
+次に、`<srcBasePath>/App.kt` を作成してApplicationクラスを作成し、さきほど生成された`DaggerAppComponent`を使います。
 
 ```kotlin
 class App : Application() {
@@ -113,7 +113,7 @@ class App : Application() {
 }
 ```
 
-もちろん、AndroidManifest.xmlへのApplicationクラスの登録を忘れずに。
+Applicationクラスを継承したクラスを作成したので、`AndroidManifest.xml`へのApplicationクラスの登録を忘れずに。
 
 ```./app/src/main/AndroidManifest.xml
 <manifest ...>
@@ -133,7 +133,7 @@ class App : Application() {
 
 現在、DogService.ktに実装されている `getDogService()` をDaggerから提供するよう書き換えていきます。
 
-`<appRoot>/DataModule.kt` を作成し、以下のように記述します。
+`<srcBasePath>/DataModule.kt` を作成し、以下のように記述します。
 
 ```kotlin
 @Module
@@ -154,12 +154,12 @@ class DataModule {
 }
 ```
 
-> `"application/json".toMediaType()` は `import okhttp3.MediaType.Companion.toMediaType` を記述することで使用できるようになります。
-> もし自動インポートされない場合は手動で上記import文を補ってみてください。
+Positive
+: `"application/json".toMediaType()` は `import okhttp3.MediaType.Companion.toMediaType` を記述することで使用できるようになります。もし自動インポートされない場合は手動で上記import文を補ってみてください。
 
-これだけだとまだDaggerのComponentに登録されていないので、AppComponentとDataModuleを結びつけます。
+これだけだとまだDaggerのComponentとして機能しないので、AppComponentとDataModuleを結びつけます。
 
-`<appRoot>/AppComponent.kt` を再び開き、以下のように書き換えます。
+`<srcBasePath>/AppComponent.kt` を再び開き、以下のように書き換えます。
 
 ```kotlin
 @Singleton
@@ -177,7 +177,7 @@ interface AppComponent {
 ### Daggerから提供されるインスタンスを使用する
 
 先程の実装で、DaggerからRetrofitインスタンスを提供するようになりました。
-しかし、まだ実際にRetrofitインスタンスを使用するクラスでDaggerから受け取る実装ができていません。
+しかし、まだ実際にRetrofitインスタンスを使用するクラスでDaggerからこれらを受け取る実装ができていません。
 
 `getDogService()`は`DogPresenter`および`ShibaPresenter`で使用されています。
 つまりこれらのクラスに対してDaggerから依存関係を注入する必要があります。
@@ -218,7 +218,7 @@ DogFragmentにおいて、DogPresenterをDaggerから注入してもらうよう
      private lateinit var dogAdapter: DogAdapter
  
 +    override fun onAttach(context: Context) {
-+        (activity!!.application as App).appComponent.inject(this) // 👈この時点ではメソッドが存在しませんがあとで解決されますからご安心を
++        (activity!!.application as App).appComponent.inject(this) // 👈この時点ではinjectメソッドが存在しません。あとで解決します。
 +        super.onAttach(context)
 +    }
 +
@@ -266,6 +266,6 @@ Android Studioの`Make Project` または `Command + F9` を実行します。
 
 ### diff
 
-masterとここまでの記事内容の想定回答のdiffです。
+ここまでの記事内容の想定回答のdiffです。
 
 [Comparing master\.\.\.intro\-dagger · outer\-heaven2/dagger\-codelabs\-sample](https://github.com/outerheavenproject/dagger-codelabs-sample/compare/master...intro-dagger)
