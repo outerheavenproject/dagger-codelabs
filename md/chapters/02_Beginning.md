@@ -28,25 +28,25 @@ JSONシリアライザーとしてkotlinx.serializationを採用しています�
 アーキテクチャとしてMVPパターンを採用しています。
 
 - ./app/src/main/java/com/github/outerheavenproject/wanstagram
-  - data
-    - Dog.kt: DogモデルおよびDogsモデル
-    - DogService.kt: Retrofitのinterface定義およびRetrofitのBuilder
-  - ui
-    - MainActivity.kt: LauncherなどのエントリーポイントとなるActivityです。DogFragmentとShibaFragmentをBottomNavigationViewで切り替えます。
-    - DogAdapter.kt: RecyclerViewのListAdapter類を定義しています
-    - AppNavigator.kt: DogAdapterからDetailActivityへ遷移するためのアクションを定義しています
-    - detail
-      - DetailActivity.kt: 画像の詳細を表示します（大きな画面で表示する）
-    - dog
-      - DogFragment.kt: 犬画像をリスト表示するFragmentです
-      - DogPresenter.kt: DogFragmentをViewと捉えた場合のPresenter実装です
-      - DogContract.kt: DogFragmentとDogPresenterで実装すべきinterfaceが定義されています
-    - shiba
-      - ShibaFragment.kt: 柴犬画像をリスト表示するFragmentです
-      - ShibaPresenter.kt: ShibaFragmentをViewと捉えた場合のPresenter実装です
-      - ShibaContract.kt: ShibaFragmentとShibaPresenterで実装すべきinterfaceが定義されています
+    - data
+        - Dog.kt: DogモデルおよびDogsモデル
+        - DogService.kt: Retrofitのinterface定義およびRetrofitのBuilder
+    - ui
+        - MainActivity.kt: LauncherなどのエントリーポイントとなるActivityです。DogFragmentとShibaFragmentをBottomNavigationViewで切り替えます。
+        - DogAdapter.kt: RecyclerViewのListAdapter類を定義しています
+        - AppNavigator.kt: DogAdapterからDetailActivityへ遷移するためのアクションを定義しています
+        - detail
+            - DetailActivity.kt: 画像の詳細を表示します（大きな画面で表示する）
+        - dog
+            - DogFragment.kt: 犬画像をリスト表示するFragmentです
+            - DogPresenter.kt: DogFragmentをViewと捉えた場合のPresenter実装です
+            - DogContract.kt: DogFragmentとDogPresenterで実装すべきinterfaceが定義されています
+        - shiba
+            - ShibaFragment.kt: 柴犬画像をリスト表示するFragmentです
+            - ShibaPresenter.kt: ShibaFragmentをViewと捉えた場合のPresenter実装です
+            - ShibaContract.kt: ShibaFragmentとShibaPresenterで実装すべきinterfaceが定義されています
 
-なお、`./app/src/main/java/com/github/outerheavenproject/wanstagram/`のパスは今後`<appRoot>/`と表現します。
+なお、`./app/src/main/java/com/github/outerheavenproject/wanstagram/`のパスは今後`<srcBasePath>/`と表現します。
 
 ### このプロジェクトの問題点 と、Daggerで解決できること
 
