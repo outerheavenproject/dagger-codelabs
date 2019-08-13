@@ -26,16 +26,14 @@ Daggerを導入することにより、以下の点においてメリットが�
 このCodelabsでは、上記で述べたDaggerの恩恵について、実際にコードを書いて体感していく形式をとります。
 具体的には以下の内容を収録しています。
 
-<ul class="checklist">
-    <li>既存プロジェクトへのDaggerの導入</li>
-    <li>DaggerでDIを動かすファーストステップ</li>
-    <li>DI環境でのテスト作成と実行</li>
-    <li>本番/検証環境で異なる注入クラスの切替え</li>
-    <li>Subcomponent</li>
-    <li>Dagger.Android</li>
-    <li>Scope, Custom Scope</li>
-    <li>Daggerで発生しがちなトラブルと修正方法</li>
-</ul>
+- 既存プロジェクトへのDaggerの導入
+- DaggerでDIを動かすファーストステップ
+- DI環境でのテスト作成と実行
+- 本番/検証環境で異なる注入クラスの切替え
+- Subcomponent
+- Dagger.Android
+- Scope, Custom Scope
+- Daggerで発生しがちなトラブルと修正方法
 
 ### 必要なもの
 
