@@ -1,4 +1,4 @@
-## Custom Scope
+## 補項: Custom Scope
 
 <!--
 start: intro-dagger-scope
