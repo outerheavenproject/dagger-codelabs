@@ -253,6 +253,34 @@ class App : DaggerApplication() {
 はじめから使ってしまうと何をしているかが分かりづらくなってしまうため、使わない方法を先に紹介しました。
 すでに基底クラスがある場合などは、`Dagger*`を使わない方が良い場合も出てくるでしょう。
 
+例えば[DaggerActivityの実装](https://github.com/google/dagger/blob/beed87cc75439d873a2f53dbd70306266023d766/java/dagger/android/DaggerActivity.java)は以下のようになっています。DaggerActivityを用いれば、これらの実装を省略できます。他のクラスに関しても同様です。
+
+```java
+/**
+ * An {@link Activity} that injects its members in {@link #onCreate(Bundle)} and can be used to
+ * inject {@link Fragment}s attached to it.
+ */
+@Beta
+public abstract class DaggerActivity extends Activity implements HasAndroidInjector {
+
+  @Inject DispatchingAndroidInjector<Object> androidInjector;
+
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    AndroidInjection.inject(this);
+    super.onCreate(savedInstanceState);
+  }
+
+  @Override
+  public AndroidInjector<Object> androidInjector() {
+    return androidInjector;
+  }
+}
+```
+
+Negative
+: `android.app.Activity` と Support Libraryの `android.support.v7.app.AppCompatActivity` で提供しているクラスが異なるため、間違わないように注意してください。
+
 ### 宿題
 
 - ShibaFragmentのDagger.Android化がまだ済んでいません。やってみよう。
