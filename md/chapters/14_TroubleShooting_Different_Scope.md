@@ -1,4 +1,4 @@
-## 補項: トラブルシューティング: Scopeのつけ間違い
+## 補項: トラブルシューティング: Custom Scopeのつけ間違い
 
 次のケースは`Scope`をつけ間違えている場合です。
 `troubleshooting-different-scope` branchをcheckoutしてください。
