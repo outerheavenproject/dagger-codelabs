@@ -1,94 +1,356 @@
-## 補項: Custom Scope
+## 補項: Custom Scope (事前準備)
 
 <!--
 start: intro-dagger-scope
 goal:  intro-dagger-custom-scope
 -->
 
-ここでは先程の`Scope`に続いて、実際に自分で定義した`Scope`を使いながら、より実践的な使い方を紹介します。
+Positive
+: Custom Scopeは難解であるものの、大規模なアプリではない場合においては必要にならないと判断したため、興味のある方向けに届ける意味を込め、「補項」としてお届けします。
+
+ここでは`Scope`の章から続いて、実際に自分で定義した`Scope`を使いながら、より実践的な使い方を紹介します。
 
 今回はWanstagramに、複数の写真を選択してシェアする機能を作りましょう。
-おおまかな仕様としては以下のようになります。
-- Bottom sheetからシェアする対象に追加できる
+おおまかな仕様としては以下のようになります:
+
+- サムネイルを長押しするとBottom Sheetが表示される
+- Bottom Sheetからシェアする対象に追加できる
 - Fabをタップすると、今まで追加した対象をまとめてシェアできる
 
-`intro-dagger-scope`を見てみてください。今回主に使用するのは
-- `MainActivity`
-- `DogActionBottomSheetDialogFragment`
+`intro-dagger-scope` のbranchから実装をはじめ、上記を満たす機能を開発します。
 
-の2つです。
-UIの作りについては本題とずれるため触れません。
-依存関係は以下のようになっています。
+ちなみに依存関係は以下のようになります。
 
 ![image](./12_Custom_Scope.png)
 
-### `Scope`
+### 画像リソース, XMLの追加
 
-今回は`Activity`のための`Scope`として`ActivityScope`、`Fragment`のための`Scope`として`FragmentScope`を定義しましょう。
-カスタムスコープは以下のように定義します。
+これから使用する画像リソースやXMLファイルについては本筋とは関係がないので、以下のコミットからそのままプロジェクトに取り込んで使用してください。
 
-```kt
-@Scope
-@MustBeDocumented
-@Retention(AnnotationRetention.RUNTIME)
-annotation class ActivityScope
+[Add resources · outerheavenproject/dagger\-codelabs\-sample@dd3cbb2](https://github.com/outerheavenproject/dagger-codelabs-sample/commit/dd3cbb28507dda1fe7ec74ad7a48bb2488c72a10)
+
+### `DogActionBottomSheet` の実装
+
+`DogActionBottomSheet` を実装します。
+
+新しい画面実装をしますが、ここまではこれまで学習したことを使っているだけです。落ち着いて実装しましょう。
+
+`<srcBasePath>/ui/dogaction/DogActionBottomSheetContract.kt`:
+
+```kotlin
+interface DogActionBottomSheetContract {
+    interface View {
+    }
+
+    interface Presenter {
+        fun start(url: String)
+        fun share()
+    }
+}
 ```
 
-```kt
-@Scope
-@MustBeDocumented
-@Retention(AnnotationRetention.RUNTIME)
-annotation class FragmentScope
+`<srcBasePath>/ui/dogaction/DogActionBottomSheetDialogFragment.kt`:
+
+```kotlin
+class DogActionBottomSheetDialogFragment : BottomSheetDialogFragment(),
+    DogActionBottomSheetContract.View {
+    companion object {
+        const val TAG = "DogActionBottomSheetDialogFragment"
+        private const val URL_KEY = "url"
+
+        fun newInstance(url: String) =
+            DogActionBottomSheetDialogFragment()
+                .apply { arguments = bundleOf(URL_KEY to url) }
+    }
+
+    @Inject
+    lateinit var presenter: DogActionBottomSheetContract.Presenter
+
+    private val url: String by lazy {
+        requireArguments().getString(URL_KEY) ?: throw IllegalStateException()
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        LayoutInflater.from(requireContext())
+            .inflate(
+                R.layout.dog_action_bottom_sheet_dialog_fragment,
+                container,
+                false
+            )
+            .also {
+                it.setOnClickListener {
+                    presenter.share()
+                    dismiss()
+                }
+            }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.start(url)
+    }
+}
 ```
 
-`MainActivity`のSubComponentに`ActivityScope`を付加します。
+`<srcBasePath>/ui/dogaction/DogActionBottomSheetDialogFragmentModule.kt`:
 
-```kt
-@ActivityScope
-@ContributesAndroidInjector
-fun contributeMainActivity(): MainActivity
+```kotlin
+@Module
+interface DogActionBottomSheetDialogFragmentModule {
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            DogActionBottomSheetDialogFragmentBindModule::class
+        ]
+    )
+    fun contributeDogActionBottomSheetDialogFragment(): DogActionBottomSheetDialogFragment
+}
+
+@Module
+interface DogActionBottomSheetDialogFragmentBindModule {
+    @Binds
+    fun bindView(fragment: DogActionBottomSheetDialogFragment): DogActionBottomSheetContract.View
+
+    @Binds
+    fun bindPresenter(presenter: DogActionBottomSheetPresenter): DogActionBottomSheetContract.Presenter
+}
 ```
 
-続いて`DogActionBottomSheetDialogFragment`には`FragmentScope`を付加します。
+`<srcBasePath>/ui/dogaction/DogActionBottomSheetPresenter.kt`:
 
-```kt
-@FragmentScope
-@ContributesAndroidInjector
-fun contributeDogActionBottomSheetDialogFragment(): DogActionBottomSheetDialogFragment
+```kotlin
+class DogActionBottomSheetPresenter @Inject constructor(
+    private val sink: DogActionSink,
+    private val view: DogActionBottomSheetContract.View
+) : DogActionBottomSheetContract.Presenter {
+    private lateinit var url: String
+
+    override fun start(url: String) {
+        this.url = url
+    }
+
+    override fun share() {
+        sink.write(url)
+    }
+}
 ```
 
-### `MainPresenter` / `DogActionSink`
+`<srcBasePath>/ui/dogaction/DogActionSink.kt`:
 
-さて、先程のクラス図を見ると`DogActionSink`というinterfaceがあることに気づくでしょう。
-今回はこのinterfaceの`write`を呼び出すことで、シェアリストへの追加を実現します。
-この`DogActionSink`の実体は`MainPresenter`です。
+```kotlin
+interface DogActionSink {
+    fun write(url: String)
+}
+```
 
-ここで考えるべきこととして、今の状態では`MainPresenter`のインスタンスを毎回生成するため、`DogActionSink`をいくら呼び出したとしても、`MainActivity`から見えるシェアリストは空であるということです。
-`MainActivity`から参照される`MainContract$Presenter`、`DogActionBottomSheetPresenter`から参照される`DogActionSink`、これらはすべて同じインスタンスである必要があります。 (混乱するかもしれませんが、`MainContract$Presenter`と`DogActionSink`の実体は同じ`MainPresenter`です。)
+Positive
+: `DogActionSink` という命名は馴染みのない方もいるかも知れません。「キッチンのシンク」のように、そこに何かを溜めるような仕組みを提供するものに対して、そう名付けることがあります。実際、`DogActionSink`ではString型のurlを受け取るようなインターフェースを備えています。
 
-この課題を解決できるのが`Scope`です。
-まずは`MainPresenter`に`ActivityScope`を**付加せずに**試してみてください。
+### Fragmentに `HasAndroidInjector` を実装する
 
-```kt
+Positive
+: `Dagger.Android` の章の最後に説明したとおり `DaggerFragment` を用いてもOKです ;-)
+
+`DogFragment`と`ShibaFragment`に`HasAndroidInjector`を実装します（いつものとおり`DogFragment`のdiffのみですが、`ShibaFragment`も同じく対応します）。
+
+```diff
+-class DogFragment : Fragment(), DogContract.View {
++class DogFragment : Fragment(), DogContract.View, HasAndroidInjector {
++    @Inject
++    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
++    
+ // ...
++
++    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
+ }
+```
+
+### AppNavigatorの拡張
+
+それぞれのFragmentで発生したイベントを実行する AppNavigator を拡張して、BottomSheetを開くなどのイベントに対応させます。
+
+```diff
+ interface AppNavigator {
+     fun navigateToDetail(imageUrl: String)
++    fun navigateToAction(childFragmentManager: FragmentManager, url: String)
++    fun shareUris(context: Context, uris: ArrayList<Uri>)
+ }
+
+ class AppNavigatorImpl @Inject constructor(
+     private val context: Context
+ ) : AppNavigator {
+     // ...
++
++    override fun navigateToAction(childFragmentManager: FragmentManager,  url: String) {
++        DogActionBottomSheetDialogFragment.newInstance(url)
++            .show(childFragmentManager,  DogActionBottomSheetDialogFragment.TAG)
++    }
++
++    override fun shareUris(context: Context, uris: ArrayList<Uri>) {
++        context.startActivity(
++            Intent.createChooser(
++                Intent().apply {
++                    action = Intent.ACTION_SEND_MULTIPLE
++                    type = "image/*"
++                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
++                },
++                ""
++            )
++        )
++    }
+ }
+```
+
+そして、 `DogAdapter` を書き換え、追加したイベントをコールします。
+
+```diff
+ class DogAdapter @Inject constructor(
++    private val childFragmentManager: FragmentManager,
+     private val navigator: AppNavigator
+ ) : ListAdapter<String, DogViewHolder>(DogDiffUtil) {
+     // ...
+     override fun onBindViewHolder(holder: DogViewHolder, position: Int) {
+         // ...
++        holder.itemView.setOnLongClickListener {
++            navigator.navigateToAction(childFragmentManager, dogUrl)
++            true
++        }
+     }
+ }
+```
+
+Positive
+: `OnLongClickListener`の最後にある不自然な `true` は、LongClickListenerがbooleanを返す必要がある為で、ロングタップで何かイベントを行った場合は `true` を返すことを求められているためです。
+
+### MainPresenterの実装
+
+MainActivityですべきことが増えたため、MainPresenterを実装します。
+
+`<srcBasePath>/ui/MainContract.kt`:
+
+```kotlin
+interface MainContract {
+    interface View {
+        fun shareDogs(dogs: Set<String>)
+    }
+
+    interface Presenter {
+        fun start()
+        fun share()
+    }
+}
+```
+
+`<srcBasePath>/ui/MainPresenter.kt`:
+
+```kotlin
 class MainPresenter @Inject constructor(
     private val view: MainContract.View
 ) : MainContract.Presenter, DogActionSink {
+    private val shareList = mutableSetOf<String>()
+
+    override fun start() {
+    }
+
+    override fun write(url: String) {
+        shareList.add(url)
+    }
+
+    override fun share() {
+        view.shareDogs(shareList)
+    }
+}
 ```
 
-`MainPresenter#write`あたりにbreakpointを置いて確認してみると、Bottom sheetから参照される`MainPresenter`が毎回生成されていることが分かるでしょう。
+Positive
+: ここで `DogActionSink` を実装しました :-)
 
-それでは`MainPresenter`に`ActivityScope`を付加してみましょう。
+`MainActivity`で新たに実装したPresenterに対応させます。
 
-```kt
-@ActivityScope
-class MainPresenter @Inject constructor(
-    private val view: MainContract.View
-) : MainContract.Presenter, DogActionSink {
+```diff
+-class MainActivity : AppCompatActivity(), HasAndroidInjector {
++class MainActivity : AppCompatActivity(), HasAndroidInjector, MainContract.View {
++    @Inject
++    lateinit var presenter: MainContract.Presenter
++
++    @Inject
++    lateinit var navigator: AppNavigator
+ 
+     // ...
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         // ...
++        findViewById<View>(R.id.fab)
++            .setOnClickListener { presenter.share() }
++
++        presenter.start()
+     }
+ 
++    override fun shareDogs(dogs: Set<String>) {
++        navigator.shareUris(this, ArrayList(dogs.map { it.toUri() }))
++    }
+ 
+     // ...
+ }
 ```
 
-今度はインスタンスが保持され、期待した挙動になっていることが確認できます。
+### MainActivityModuleでModuleのインストール, 追加
 
-### まとめ
+新しく作成した画面や、拡張したクラスで依存関係が増えたので、対応させます。
+`MainActivityModule`を編集し、Moduleのインストールや依存関係の追加をします。
 
-このチャプターでは`Scope`の使い方について実際に挙動を見ながら確認していきました。
-最近ではMVVMを採用する場合には`androidx.lifecycle.ViewModelProvider`もあるため`Scope`が必要な機会はかなり少なくなってきているかとは思いますが、Fluxなどを採用する場合には有効な知識です。
+```diff
+ @Module
+ interface MainActivityModule {
+     @ActivityScope
+     @ContributesAndroidInjector(
+         modules = [
++            MainActivityProvidesModule::class,
+             MainActivityBindModule::class,
+             DogFragmentModule::class,
+-            ShibaFragmentModule::class
++            ShibaFragmentModule::class,
++            DogActionBottomSheetDialogFragmentModule::class
+         ]
+     )
+     fun contributeMainActivity(): MainActivity
+ }
+ 
++@Module
++class MainActivityProvidesModule {
++    @Provides
++    fun provideFragmentManager(activity: MainActivity): FragmentManager {
++        return activity.supportFragmentManager
++    }
++}
++
+ @Module
+ interface MainActivityBindModule {
+     @Binds
+     fun bindContext(context: MainActivity): Context
+ 
+     @Binds
+     fun bindAppNavigator(navigator: AppNavigatorImpl): AppNavigator
++
++    @Binds
++    fun bindView(activity: MainActivity): MainContract.View
++
++    @Binds
++    fun bindPresenter(presenter: MainPresenter): MainContract.Presenter
++
++    @Binds
++    fun bindDogActionSink(presenter: MainPresenter): DogActionSink
+ }
+```
+
+・・・とまぁここまでが準備編です。
+各パーツは揃っているのでコンパイルは通りますが、実際に動かしてみると想定通りに動きません。いくら画像を長押しして「後でシェアする」を押し、FABを押しても空のリストが帰ってきます。
+
+それは何故でしょうか？それはどうやったら修正できるでしょうか？
+
+続く・・・。
+
