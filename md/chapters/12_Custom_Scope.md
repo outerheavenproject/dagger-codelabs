@@ -20,7 +20,7 @@ goal:  intro-dagger-custom-scope
 UIの作りについては本題とずれるため触れません。
 依存関係は以下のようになっています。
 
-![image](./13_Custom_Scope.png)
+![image](./12_Custom_Scope.png)
 
 ### `Scope`
 
