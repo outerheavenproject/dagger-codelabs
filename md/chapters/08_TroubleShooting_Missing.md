@@ -1,6 +1,7 @@
-## トラブルシューティング1: Provide/Bindのし忘れ
+## トラブルシューティング: Provide/Bindのし忘れ
 
-ここから先はトラブルシューティングとして、Daggerを使う上でよく目にするエラーを確認しながら直していきましょう。
+Positive
+: ここから先のトラブルシューティング章では、Daggerを使う上でよく目にするエラーを確認しながら直していきます。動作しないコードが含まれるbranchをcheckoutすることで、実際のエラーを引き起こした後、エラーを修正します。
 
 まずはProvideまたはBindをし忘れているケースです。
 `troubleshooting-bind-and-provide` branchをcheckoutしてbuildしてください。
