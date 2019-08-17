@@ -6,9 +6,10 @@ goal:  intro-dagger-custom-scope
 -->
 
 Positive
-: Custom Scopeは難解であるものの、大規模なアプリではない場合においては必要にならないと判断したため、興味のある方向けに届ける意味を込め、「補項」としてお届けします。
+: Custom ScopeはDaggerのインスタンス管理をより柔軟にすることができますが、大規模なアプリではない場合においては必要にならず、そのための準備コードも膨大となったため、本題からは外しました。しかしながら大規模なアプリにおいてはしばしば見かける記述のため、「補項」としてお届けします。
 
-ここでは`Scope`の章から続いて、実際に自分で定義した`Scope`を使いながら、より実践的な使い方を紹介します。
+ここからは`Scope`の章から続いて、実際に自分で定義した`Scope`を使いながら、より実践的な使い方を紹介します。
+Custom Scopeについて解説する前に、既存のWanstagramアプリに機能強化をします（そうすることでCustom Scopeの良さが分かりやすくなります）。
 
 今回はWanstagramに、複数の写真を選択してシェアする機能を作りましょう。
 おおまかな仕様としては以下のようになります:
@@ -96,30 +97,6 @@ class DogActionBottomSheetDialogFragment : BottomSheetDialogFragment(),
 }
 ```
 
-`<srcBasePath>/ui/dogaction/DogActionBottomSheetDialogFragmentModule.kt`:
-
-```kotlin
-@Module
-interface DogActionBottomSheetDialogFragmentModule {
-    @FragmentScope
-    @ContributesAndroidInjector(
-        modules = [
-            DogActionBottomSheetDialogFragmentBindModule::class
-        ]
-    )
-    fun contributeDogActionBottomSheetDialogFragment(): DogActionBottomSheetDialogFragment
-}
-
-@Module
-interface DogActionBottomSheetDialogFragmentBindModule {
-    @Binds
-    fun bindView(fragment: DogActionBottomSheetDialogFragment): DogActionBottomSheetContract.View
-
-    @Binds
-    fun bindPresenter(presenter: DogActionBottomSheetPresenter): DogActionBottomSheetContract.Presenter
-}
-```
-
 `<srcBasePath>/ui/dogaction/DogActionBottomSheetPresenter.kt`:
 
 ```kotlin
@@ -149,6 +126,30 @@ interface DogActionSink {
 
 Positive
 : `DogActionSink` という命名は馴染みのない方もいるかも知れません。「キッチンのシンク」のように、そこに何かを溜めるような仕組みを提供するものに対して、そう名付けることがあります。実際、`DogActionSink`ではString型のurlを受け取るようなインターフェースを備えています。
+
+`<srcBasePath>/ui/dogaction/DogActionBottomSheetDialogFragmentModule.kt`:
+
+```kotlin
+@Module
+interface DogActionBottomSheetDialogFragmentModule {
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            DogActionBottomSheetDialogFragmentBindModule::class
+        ]
+    )
+    fun contributeDogActionBottomSheetDialogFragment(): DogActionBottomSheetDialogFragment
+}
+
+@Module
+interface DogActionBottomSheetDialogFragmentBindModule {
+    @Binds
+    fun bindView(fragment: DogActionBottomSheetDialogFragment): DogActionBottomSheetContract.View
+
+    @Binds
+    fun bindPresenter(presenter: DogActionBottomSheetPresenter): DogActionBottomSheetContract.Presenter
+}
+```
 
 ### Fragmentに `HasAndroidInjector` を実装する
 
@@ -347,7 +348,7 @@ Positive
  }
 ```
 
-・・・とまぁここまでが準備編です。
+ここまでが準備編です。
 各パーツは揃っているのでコンパイルは通りますが、実際に動かしてみると想定通りに動きません。いくら画像を長押しして「後でシェアする」を押し、FABを押しても空のリストが帰ってきます。
 
 それは何故でしょうか？それはどうやったら修正できるでしょうか？
