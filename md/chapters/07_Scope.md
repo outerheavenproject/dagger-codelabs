@@ -70,6 +70,9 @@ class DogRepository @Inject constructor(
 今度はタブを切り替えても同じ画像が表示されます。
 これが基本的な`Scope`の使い方です。
 
+Positive
+: Custom Scopeに関する解説を "補項" として用意してあります
+
 ### 宿題
 
 今回は宿題ありません😃
