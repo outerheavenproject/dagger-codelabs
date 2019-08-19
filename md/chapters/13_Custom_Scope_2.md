@@ -1,7 +1,7 @@
 ## 補項: Custom Scope (実装)
 
 Positive
-: `Custom Scope (事前準備)` に引き続き Custom Scope について解説します。ここからは Custom Scope を実際に使ってみます。
+: "Custom Scope (事前準備)" に引き続き Custom Scope について解説します。ここからは Custom Scope を実際に使ってみます。
 
 先程の章ではコードレベルでは問題のない実装を行いましたが、実際はうまく動きませんでした。
 その理由を後ほど説明しつつ、Custom Scopeを実装していきます。
