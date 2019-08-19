@@ -102,3 +102,9 @@ Scopeの章と見比べると、実際にインスタンス管理をしたいク
 
 最近ではMVVMを採用する場合には`androidx.lifecycle.ViewModelProvider`もあるため`Scope`が必要な機会はかなり少なくなってきているかとは思いますが、Fluxなどを採用する場合には有効な知識です。
 
+### diff
+
+ここまでのdiffは以下のページで確認できます。
+
+[Comparing intro\-dagger\-scope\.\.\.intro\-dagger\-custom\-scope · outerheavenproject/dagger\-codelabs\-sample](https://github.com/outerheavenproject/dagger-codelabs-sample/compare/intro-dagger-scope...intro-dagger-custom-scope)
+
