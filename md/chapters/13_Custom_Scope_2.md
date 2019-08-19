@@ -58,6 +58,9 @@ interface DogActionBottomSheetDialogFragmentModule {
 }
 ```
 
+Negative
+: 実は `FragmentScope` は定義はしたものの一度も利用していません。よって、`FragmentScope`に関しては定義をしなくても問題ありません（実際これ以降出てきません）。不要な定義は極力するべきではないですが、自身で色々と試してみる際にご利用頂ければと思います。
+
 ### `MainPresenter` / `DogActionSink`
 
 ![image](./12_Custom_Scope.png)
@@ -90,9 +93,6 @@ class MainPresenter @Inject constructor(
 ```
 
 今度はインスタンスが保持され、期待した挙動になっていることが確認できます。
-
-Positive
-: 実はこのプロジェクトでは`@FragmentScope`は未使用でした。Subcomponentには `@FragmentScope` をつけていますが、Fragmentのライフサイクルで管理されるべきクラスがなかったためです。なにか考えて作ってみてもいいかもしれません。
 
 ### まとめ
 

@@ -162,7 +162,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 ```
 
 Positive
-: `super.onCreate()`よりも先に`AndroidInjection.inject()`を実行する理由は・・・　TODO: なんでだっけ？
+: `super.onCreate()`よりも先に`AndroidInjection.inject()`を実行する理由は、FragmentでもDaggerを使用している場合に、`super.onCreate()`の内部で `Fragment#onAttach()` が呼ばれることがあり、そうなるとActivity側の`inject()`の実行より先にFragment側の`inject()`が呼ばれてしまい、クラッシュしてしまいます。それを避けるため、`super.onCreate()`より先に`inject()`を実行しています。
 
 ### Fragmentの依存関係を解決する
 

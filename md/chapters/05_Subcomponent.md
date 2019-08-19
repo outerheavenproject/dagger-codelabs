@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
 - ApplicationContextとActivityContextを共存させたいときがありますが、このままだとうまくいきません。どうすればいいでしょうか？
     - 上記の `MainActivitySubcomponent.kt`, `MainActivity.kt` の修正を戻すとこの状態を再現させることが出来ます。しかし、Makeすると`エラー: [Dagger/DuplicateBindings] android.content.Context is bound multiple times` が発生します。
     - このCodelabsにおいて今時点でとれる解決策としては、`AppComponent`側の `@BindsInstance` で `Context` ではなく `Application` と定義することです
-    - 別の解法としてはCustom Scopeの知識が必要になります。以降の章で説明します。
+    - 別の解法としては [`Qualifiers`](https://dagger.dev/users-guide.html#qualifiers) を用いることです。このCodelabsでは解説しませんが、必要になった際は思い出してみてください。
 
 ### diff
 

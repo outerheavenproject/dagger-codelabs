@@ -14,7 +14,7 @@ Positive
 以下のコマンドを実行して、GitHubリポジトリをcloneします。
 
 ```
-$ git clone git@github.com:outer-heaven2/dagger-codelabs-sample.git
+$ git clone https://github.com/outerheavenproject/dagger-codelabs-sample.git
 ```
 
 cloneが完了したらAndroid Studioを実行し、cloneしたプロジェクトを指定して開きます。
