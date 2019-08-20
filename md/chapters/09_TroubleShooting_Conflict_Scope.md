@@ -1,4 +1,4 @@
-## トラブルシューティング2: ScopeのConflict
+## トラブルシューティング: ScopeのConflict
 
 次のケースは`Scope`がConflictしている場合です。
 `troubleshooting-conflict-scope` branchをcheckoutしてください。

@@ -35,6 +35,7 @@ class DogRepository @Inject constructor(
 ```
 
 `Dogs`を保持し、あればそちらを返す、なければ新たに取得します。
+
 `DogPresenter`で`DogService`の代わりに使用しましょう。
 
 ```kt
@@ -51,17 +52,34 @@ class DogPresenter @Inject constructor(
 }
 ```
 
-この状態でビルドして、2つのタブを切り替えてみてください。
-すると、うまく機能していない(毎回APIにアクセスしている)ことが分かるはずです。
+Negative
+: ShibaPresenterではRepositoryを実装していないので、「柴犬」タブでは依然として毎回APIリクエストが発生します
+
+この状態でビルドして、「犬」タブから「柴犬」タブに行き、また「犬」タブを開いてみてください。
+すると、Repositoryを設定したにもかかわらず、うまく機能していない(毎回APIにアクセスしている)ことが分かるはずです。
 これは`Repository`のインスタンスが毎回生成されるため、`Dogs`の状態を保持できていないからです。
 
 このような場合に`Scope`が役立ちます。
 `Singleton`を付加してもう一度試してみましょう。
 
 ```kt
-@Singleton
+@Singleton // 👈
 class DogRepository @Inject constructor(
 ```
 
 今度はタブを切り替えても同じ画像が表示されます。
 これが基本的な`Scope`の使い方です。
+
+Positive
+: Custom Scopeに関する解説を "補項" として用意してあります
+
+### 宿題
+
+今回は宿題ありません😃
+
+### diff
+
+ここまでのdiffは以下のページで確認できます。
+
+[Comparing intro\-dagger\-android\-support\.\.\.intro\-dagger\-scope · outerheavenproject/dagger\-codelabs\-sample](https://github.com/outerheavenproject/dagger-codelabs-sample/compare/intro-dagger-android-support...intro-dagger-scope)
+

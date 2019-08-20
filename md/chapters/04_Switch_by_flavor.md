@@ -5,19 +5,23 @@ start: intro-dagger-testing
 goal:  intro-dagger-build-types
 -->
 
-> あなたはDagger環境でテストを書くことが出来ました！
-> 次はDaggerを使ってデバッグログ出力を切り替えたり、本番/検証環境を切り替えるといった、
-> 通常アプリを作っていてありがちなケースをDaggerで解決します。
+Positive
+: あなたはDagger環境でテストを書くことが出来ました！<br>次はDaggerを使ってデバッグログ出力を切り替えたり、本番/検証環境を切り替えるといった、通常アプリを作っていてありがちなケースをDaggerで解決します。
 
 Daggerを導入しつつ、本番環境と検証環境を差し替える方法を考えます。
 
 Androidアプリ開発において、本番環境と検証環境を差し替える方法として一般的なのは、
 Build variant(Build type (`debug`,`release`)やProduct flavor(例として`staging`, `production`))ごとにフォルダを切り替える機能があります。
-Daggerにおいてもこれらの機能を活用するのですが、**差し替えたいクラスをvariantごとに提供して直接差し替える**のではなく、**SubComponentをvariantごとに提供することで間接的に差し替えを行う**ことが求められます。
+Daggerにおいてもこれらの機能を活用するのですが、**差し替えたいクラスをvariantごとに提供して直接差し替える**のではなく、**Moduleをvariantごとに提供することで間接的に差し替えを行う**ことが求められます。
 
 というわけで、デバッグ環境ではRetrofitのログ出力を行うが、本番環境ではログ出力をさせない実装を行いたいと思います。
 
 ### ログ出力用ライブラリの追加
+
+Retrofitの通信ログをLogcatに出力する方法として手っ取り早い方法は、
+Retrofitが内部で使用しているOkHttpに対してInterceptorを設定することです。
+
+というわけで`logging-interceptor`を依存関係に加えます。
 
 ```./app/build.gradle
 // ...
@@ -29,7 +33,13 @@ dependencies {
 }
 ```
 
-### Retrofitの生成のために OkHttpClient を受け取るよう書き換え
+### Retrofitがカスタムされた OkHttpClient を使用するよう書き換え
+
+RetrofitではOkHttpClientを指定しない場合、デフォルト設定でOkHttpを初期化し、使用します。
+その場合ログ出力はされないので、ログ出力をしたい場合はカスタマイズされたOkHttpを使用するようにRetrofitのBuilderで設定します。
+以下のように記述することで、カスタマイズされたOkHttpを使います。
+
+肝心のカスタマイズされたOkHttpは次のステップで用意します。
 
 ```diff
      @Singleton
@@ -47,7 +57,11 @@ dependencies {
 
 ### debug variant と release variant に OkHttpClient を提供するモジュールを記述
 
-まずは `./app/src/`**release**`/java/com/github/outerheavenproject/wanstagram/OkHttpClientModule.kt` に以下の内容でOkHttpClientを提供するよう記述します。
+Positive
+: `./app/src/` には通常 `test`, `androidTest` のテスト用コードの配置フォルダおよび、`main` というフォルダでメインアプリ用コードの配置フォルダが存在します。<br>`debug`, `release` というフォルダは初期状態では存在しないので作成します。<br>`debug`, `release` のvariantは初期状態で存在しているためフォルダを作成するだけで利用できますが、それ以外の名称を付ける場合（例えば `staging` など）は、対応するBuild variantまたはフレーバーを`./app/build.gradle` に実装する必要があります。<br>詳しくはこちらを確認してください： [ビルド バリアントの設定  \|  Android Developers](https://developer.android.com/studio/build/build-variants?hl=ja)
+
+まずは `./app/src/`**release**`/java/com/github/outerheavenproject/wanstagram/OkHttpClientModule.kt` に以下の内容でOkHttpClientを記述します。
+
 見ればわかる通り、ほぼ何もしていません。
 
 ```kotlin
@@ -61,6 +75,8 @@ class OkHttpClientModule {
 ```
 
 次に `./app/src/`**debug**`/java/com/github/outerheavenproject/wanstagram/OkHttpClientModule.kt` を作成して記述します。
+
+御覧の通り、`HttpLoggingInterceptor`が組み込まれています。
 
 ```kotlin
 @Module
@@ -78,17 +94,9 @@ class OkHttpClientModule {
 }
 ```
 
-御覧の通り、`HttpLoggingInterceptor`が組み込まれています。
-
-> `./app/src/` には通常 `test`, `androidTest` のテスト用コードの配置フォルダおよび、
-> `main` というフォルダでメインアプリ用コードの配置フォルダが存在します。
-> `debug`, `release` というフォルダは初期状態では存在しないので作成します。
-> `debug`, `release` のvariantは初期状態で存在しているためフォルダを作成するだけで利用できますが、
-> それ以外の名称を付ける場合（例えば `staging` など）は、対応するBuild variantまたはフレーバーを
-> `./app/build.gradle` に実装する必要があります。
-> 詳しくはこちらを確認してください： [ビルド バリアントの設定  \|  Android Developers](https://developer.android.com/studio/build/build-variants?hl=ja)
-
 ### AppComponentにOkHttpClientModuleを登録する
+
+`@Component`に記載しないと `provideRetrofit(client: OkHttpClient)` の `OkHttpClient`が解決できなくなるので、忘れないように記載しましょう。
 
 ```diff
  @Singleton
@@ -104,13 +112,16 @@ class OkHttpClientModule {
  }
 ```
 
-さて `debug` バリアントで動かしてみましょう。
-Android StudioのLogcatを見てみて、通信のログが表示されたら成功です！
+Negative
+: 記載するのを忘れると `エラー: [Dagger/MissingBinding] okhttp3.OkHttpClient cannot be provided without an @Inject constructor or an @Provides-annotated method.` というエラーが出ます。
+
+さて `debug` バリアントで実際にアプリを動かしてみましょう。
+Android StudioのLogcatを確認し、通信のログが表示されたら成功です！
 
 ### 宿題
 
-- `release` バリアントでログが出ないことを確認しましょう。
-    - releaseビルドのための鍵設定が少々面倒です。大雑把に `./app/build.gradle` を以下のように設定するとよさそうです。
+- `release` バリアントではログが出ないことを確認しましょう。
+    - releaseビルドのための鍵設定が少々面倒です。大雑把にやるだけなら `./app/build.gradle` を以下のように設定します。
 
 ```gradle
 android {
@@ -135,15 +146,15 @@ android {
 ```
 
 - 本番環境と検証環境を分けるにはどうすればいいでしょうか？
-    - まずは `production` フレーバーと `staging` フレーバーを用意するところからですね。
-    - いくつかの答えがあるでしょう：
+    - まずは `production` フレーバーと `staging` フレーバーを用意します。先程リンクを紹介したビルドバリアントの設定を参考にしてください。
+    - いくつか回答例が考えられます：
         - Retrofitクラスを本番/検証で分ける
-            - この方法だとbaseUrl以外の記述がダブってしまい非効率かもしれません。また、片方で実装した内容がもう片方に実装されないエラーを引き起こす可能性があります
+            - この方法だと baseUrl 以外の記述がダブってしまい非効率かもしれません。また、片方で実装した内容がもう片方に実装されない人為的エラーを引き起こす可能性があります
         - Retrofit.Builderクラスを本番/検証で分ける
-            - この方法は baseUrl のみ設定した Retrofit.Builder をmainで共通化しているComponent実装で拡張していくので、先程の方法よりもエラーが出づらいです
+            - この方法は baseUrl のみ設定した Retrofit.Builder を出し分けるため、先程の方法よりも問題が出づらいです
         - baseUrlに設定するホストを独自のクラスに包んで 本番/検証で分ける
-            - Value Object的な発想です。筆者はこのやり方はプロダクションのコードでは見たことがないですが、うまくいきそうな気がします。
-    - 今回のサンプルプロジェクトでは2種類のAPIを用意することが出来ませんでした、なので回答は用意していません！でもここまで来たキミならできるはずだ！頑張って！
+            - Value Object的な発想です。筆者はこのやり方はプロダクションのコードではこれまで見たことがないですが、うまくいきそうな気がします。
+    - 今回のサンプルプロジェクトでは2種類のAPIを用意することが出来ませんでした。なので回答例は用意していません 🙇‍♀️
 
 ### diff
 
