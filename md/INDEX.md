@@ -1,7 +1,7 @@
 ---
 id: dagger-codelab
 summary: Dagger codelab
-feedback link: https://github.com/outerheavenproject/dagger-codelabs-sample/issues
+feedback link: https://github.com/outerheavenproject/dagger-codelabs/issues
 
 ---
 
