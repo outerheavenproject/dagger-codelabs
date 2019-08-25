@@ -348,6 +348,28 @@ Positive
  }
 ```
 
+Positive
+: `MainActivityProvidesModule` と `MainActivityBindModule` は以下のようにまとめて書くこともできますが、 `@Provides` と `@Binds` はそれぞれ分けてモジュールを定義することをお勧めします。
+
+```
+@Module
+abstract class MainActivityProvidesModule {
+    @Module
+    companion object {
+        @JvmStatic
+        @Provides
+        fun provideFragmentManager(activity: MainActivity): FragmentManager {
+            return activity.supportFragmentManager
+        }
+    }
+
+    @Binds
+    abstract fun bindContext(context: MainActivity): Context
+
+    // ...
+}
+```
+
 ここまでが準備編です。
 各パーツは揃っているのでコンパイルは通りますが、実際に動かしてみると想定通りに動きません。いくら画像を長押しして「後でシェアする」を押し、FABを押しても空のリストが帰ってきます。
 
