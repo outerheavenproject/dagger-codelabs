@@ -41,7 +41,7 @@ interface MainActivityModule {
 ```
 
 Positive
-: `@Binds` アノテーションは、 `@Provides` を用いた以下の実装とほぼ等価です。単純な型キャストだけが必要なケースにおいて `@Binds` を用いるとシンプルに実装することが出来ます。
+: `@Binds` アノテーションは、 `@Provides` を用いた以下の実装とほぼ等価です。注入されたパラメーター（この場合 `navigator`）に対して割当可能な型（この場合 `AppNavigator`）を返すだけの場合において `@Binds` を用いるとシンプルに実装することが出来ます。
 
 ```kt
 @Module

@@ -349,7 +349,7 @@ Positive
 ```
 
 Positive
-: `MainActivityProvidesModule` と `MainActivityBindModule` は以下のようにまとめて書くこともできますが、 `@Provides` と `@Binds` はそれぞれ分けてモジュールを定義することをお勧めします。
+: `MainActivityProvidesModule` と `MainActivityBindModule` は以下のようにまとめて書くこともできます。
 
 ```
 @Module
