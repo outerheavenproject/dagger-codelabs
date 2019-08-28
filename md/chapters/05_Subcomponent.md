@@ -40,6 +40,19 @@ interface MainActivityModule {
 }
 ```
 
+Positive
+: `@Binds` アノテーションは、 `@Provides` を用いた以下の実装とほぼ等価です。注入されたパラメーター（この場合 `navigator`）に対して割当可能な型（この場合 `AppNavigator`）を返すだけの場合において `@Binds` を用いるとシンプルに実装することが出来ます。
+
+```kt
+@Module
+class MainActivityModule {
+    @Provides
+    fun bindAppNavigator(navigator: AppNavigatorImpl): AppNavigator {
+        return navigator
+    }
+}
+```
+
 Subcomponentを定義するには、セットで `Subcomponent.Factory` を定義する必要があります。
 `@BindsInstance`を使うことで、引数として与えられたインスタンスを用いて、型の解決を試みるようになります。
 
