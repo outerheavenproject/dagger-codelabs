@@ -138,6 +138,78 @@ class DogPresenterTest {
 
 無事にテストをPassできるでしょうか・・・？
 
+### MockKを使用する
+
+ここまで、自分でモッククラスを準備してテストを記述する方法を紹介してきましたが、Mocking Library/Frameworkを使用することも可能です。今でもよく使われるのはMockitoですが、ここではkotlinx.coroutinesと相性の良いMockKを使ってみましょう。
+
+まずはMockKを導入します。
+
+```./app/build.gradle
+dependencies {
+    // ...
+    testImplementation 'io.mockk:mockk:1.9.3'
+    // ...
+}
+```
+
+それぞれをMockとしてマークしましょう。以下のように書き換えることができます。
+
+```DogPresenterTest.kt
+@RunWith(AndroidJUnit4::class)
+class DogPresenterTest {
+    @SpyK
+    private var dogService = TestDogService()
+    @SpyK
+    private var view = TestView()
+    @InjectMockKs
+    private lateinit var presenter: DogPresenter
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+        presenter.attachView(view)
+    }
+
+// ...
+```
+
+しかしこれでは何も変わっていませんね。今回のテストでは`DogContract$View#updateDogs`が呼ばれたことを確認したいので、これをMockKで確認しましょう。
+これには`verify`が役に立ちます。
+また、`dogService#getDogs`から返ってきたDogsが正しく渡されているかも確認しましょう。
+これは`coEvery`を使うと良いです。`coEvery`は`every`のkotlinx.coroutines対応版です。
+
+```
+@RunWith(AndroidJUnit4::class)
+class DogPresenterTest {
+    @MockK
+    private lateinit var dogService: DogService
+    @RelaxedMockK
+    private lateinit var view: DogContract.View
+    @InjectMockKs
+    private lateinit var presenter: DogPresenter
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+        presenter.attachView(view)
+    }
+
+    @Test
+    fun start() {
+        val dogs = mockk<Dogs>()
+        coEvery { dogService.getDogs(any()) } returns dogs
+
+        runBlockingTest { presenter.start() }
+
+        verify { view.updateDogs(dogs) }
+    }
+}
+```
+
+これでテストがシンプルになりました。`RelaxedMockK`は全ての関数に対して単純な値を返してくれます。
+Mocking Library/Frameworkは非常に便利ですが、使い方によっては可読性を下げることもあります。
+モッククラスを自分で定義したほうが良い場合もありますので、うまく使ってより良いテストを書きましょう。
+
 ### 宿題
 
 - テストが一発でPassするのは少し気持ち悪いです（本当にテストが回ってなくても似たような挙動になります）。 `isEqualTo(1)` を `isNotEqualTo(1)` とか `isEqualTo(0)` に変えてテストを実行してみて、テストが落ちることを確認しましょう。
